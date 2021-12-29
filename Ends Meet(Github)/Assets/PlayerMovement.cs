@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject playerCamera;
     public CharacterController controller;
     public bool inCombat = false;
+    public bool attacked = false;
     public float speed = 12f;
     public float gravity = -9.18f;
     public float jumpHeight = 3f;
@@ -26,9 +27,15 @@ public class PlayerMovement : MonoBehaviour
     public int attackRange;
     public float attackSpeed;
     public float armor;
+    public float lifeRegen;
+    public float outOfCombatTime;
+    public bool regenInCombat;
+    bool healingOnCD = false;
     //playerStatsStuff
     //GameObject[] Enemies;
     Coroutine attacking;
+    Coroutine combatChecking;
+    Coroutine passiveRegen;
     void Start()
     { 
         enemies = new GameObject[50000];
@@ -42,9 +49,22 @@ public class PlayerMovement : MonoBehaviour
             attacking = StartCoroutine(attackCooldown(enemies[findPlayerTarget()]));
         }
 
+        if (inCombat == true & attacked == true & combatChecking == null) {
+            attacked = false;
+            combatChecking = StartCoroutine(outOfCombatCheck());
+        } else if (inCombat == true & attacked == true & combatChecking != null) {
+            attacked = false;
+            StopCoroutine(combatChecking);
+            combatChecking = StartCoroutine(outOfCombatCheck()); 
+        }
+
+        if (inCombat == false & healingOnCD == false & GetComponent<StatusManager>().health < GetComponent<StatusManager>().maxHealth) {
+            passiveRegen = StartCoroutine(healingCooldown());
+        }
+
         enemies = GameObject.Find("MobManagement").GetComponent<WaveManager>().currentZombies;
 
-        if (inCombat == false) {
+        //if (readyToAttack == true) {
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
             if (isGrounded && velocity.y < 0)
@@ -79,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             }*/
 
-        }
+        //}
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
@@ -90,6 +110,23 @@ public class PlayerMovement : MonoBehaviour
         readyToAttack = false;
         yield return new WaitForSeconds(attackSpeed);
         readyToAttack = true;
+    }
+
+    IEnumerator outOfCombatCheck() {
+        inCombat = true;
+        yield return new WaitForSeconds(outOfCombatTime);
+        inCombat = false;
+    }
+
+    IEnumerator healingCooldown() {
+        passiveHealing();
+        healingOnCD = true;
+        yield return new WaitForSeconds(1);
+        healingOnCD = false;
+    }
+
+    public void passiveHealing() {
+        GetComponent<StatusManager>().health = GetComponent<StatusManager>().health + lifeRegen;
     }
 
     public void attackPlayer(GameObject target) {

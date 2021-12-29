@@ -7,8 +7,8 @@ public class dbManagement : MonoBehaviour
 {
 
     private void Start() {
-        readDatabase();
-        addPlayer();
+        //readDatabase();
+        //addPlayer();
     }
 
     void readDatabase() {

@@ -68,8 +68,12 @@ public class AttackClosestPlayer : MonoBehaviour
 
     public void attackPlayer(GameObject target) {
         if ((enemyDamage - target.GetComponent<PlayerMovement>().armor) <= 0f) {
+            target.GetComponent<PlayerMovement>().inCombat = true;
+            target.GetComponent<PlayerMovement>().attacked = true;
             target.GetComponent<StatusManager>().health = target.GetComponent<StatusManager>().health - 1;
         } else {
+            target.GetComponent<PlayerMovement>().inCombat = true;
+            target.GetComponent<PlayerMovement>().attacked = true;
             target.GetComponent<StatusManager>().health = target.GetComponent<StatusManager>().health - (enemyDamage - target.GetComponent<PlayerMovement>().armor);
         }
     }

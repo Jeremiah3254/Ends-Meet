@@ -10,6 +10,8 @@ public class StatusManager : MonoBehaviour
     public float maxHealth;
     public GameObject healthBarUI;
     public Slider slider;
+    public Text healthNumericDisplay;
+
 
     public Transform camTransform;
 	Quaternion originalRotation;
@@ -35,6 +37,7 @@ public class StatusManager : MonoBehaviour
         camTransform = GameObject.Find("PlayerSpawner").GetComponent<SpawnSelectedCharacter>().currentPlayerCameras[0].transform;
         }
         slider.value = CalculateHealth();
+        healthNumericDisplay.text = (health).ToString()+"/"+(maxHealth).ToString();
         healthBarUI.transform.rotation = camTransform.rotation * originalRotation;
         if (health <= 0) {
             if (ismob == true) {

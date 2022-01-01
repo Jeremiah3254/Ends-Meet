@@ -1200,6 +1200,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 0
   maxHealth: 100
+  bloodReward: 1000
   healthBarUI: {fileID: 9183267060063778680}
   slider: {fileID: 9183267058652171879}
   healthNumericDisplay: {fileID: 5877266736781549760}

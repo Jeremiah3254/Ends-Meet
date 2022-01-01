@@ -8,6 +8,7 @@ public class StatusManager : MonoBehaviour
 {
     public float health;
     public float maxHealth;
+    public int bloodReward;
     public GameObject healthBarUI;
     public Slider slider;
     public Text healthNumericDisplay;
@@ -25,7 +26,7 @@ public class StatusManager : MonoBehaviour
     void Start()
     {
         //camTransform = GameObject.Find("Main Camera").transform;
-        health = maxHealth;
+        health = (maxHealth+StateNameController.healthBoost);
         slider.value = CalculateHealth();
         originalRotation = healthBarUI.transform.rotation;
     }
@@ -37,22 +38,23 @@ public class StatusManager : MonoBehaviour
         camTransform = GameObject.Find("PlayerSpawner").GetComponent<SpawnSelectedCharacter>().currentPlayerCameras[0].transform;
         }
         slider.value = CalculateHealth();
-        healthNumericDisplay.text = (health).ToString()+"/"+(maxHealth).ToString();
+        healthNumericDisplay.text = (health).ToString()+"/"+((maxHealth+StateNameController.healthBoost)).ToString();
         healthBarUI.transform.rotation = camTransform.rotation * originalRotation;
         if (health <= 0) {
             if (ismob == true) {
                 StateNameController.XP+=1;
+                StateNameController.blood = StateNameController.blood + bloodReward;
             }
             Destroy(gameObject);
         }
 
-        if (health > maxHealth) {
-            health = maxHealth;
+        if (health > (maxHealth+StateNameController.healthBoost)) {
+            health = (maxHealth+StateNameController.healthBoost);
         }
     }
     
     float CalculateHealth() {
-        return health/maxHealth;
+        return health/(maxHealth+StateNameController.healthBoost);
     }
 
     public void isZombieCounter() {

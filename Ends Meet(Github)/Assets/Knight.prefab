@@ -895,10 +895,10 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
-  characterDamage: 0.5
+  characterDamage: 50
   sight: 12
   attackRange: 2
-  attackSpeed: 0.001
+  attackSpeed: 1
   armor: 2
   lifeRegen: 1
   outOfCombatTime: 10
@@ -917,6 +917,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   maxHealth: 100
+  bloodReward: 0
   healthBarUI: {fileID: 195562705957137340}
   slider: {fileID: 1479632137620739878}
   healthNumericDisplay: {fileID: 2561472771319569170}

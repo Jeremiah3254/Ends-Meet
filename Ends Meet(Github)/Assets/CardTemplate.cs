@@ -5,5 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Card Template", menuName = "Card Template")]
 public class CardTemplate : ScriptableObject
 {
-   public CommandCard[] commandCards;
+   public CommandCard[] commandCardsOriginal; 
+   public CommandCard[] commandCards; 
 }

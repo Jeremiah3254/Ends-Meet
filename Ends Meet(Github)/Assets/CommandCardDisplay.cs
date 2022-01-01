@@ -15,12 +15,23 @@ public class CommandCardDisplay : MonoBehaviour
 
     public Sprite[] ccIcons;
 
+    //public CardTemplate[] commandCardsOriginal;
     public CardTemplate[] commandCards;
     public int currentLayer = 0; 
 
+    bool cooldownChecking = false;
+    Coroutine cooldownActive;
+    public GameObject abilityFunctionalityHolder;
+
     // [0]-No Object  [1]-UpgradeButton  [2]-AbilityButton  [3]-PassiveIcon  [4]-LayerButton
 
+
     void Awake() {
+      //commandCards = new CommandCard[commandCardsOriginal.Length];
+        for (int i = 0; i<commandCards[StateNameController.characterSelected].commandCardsOriginal.Length; i++) {
+            commandCards[StateNameController.characterSelected].commandCards[i] = Instantiate(commandCards[StateNameController.characterSelected].commandCardsOriginal[i]);
+        }
+        
         buttonManagement[0].onClick.AddListener(() => buttonClickedController(0));
         buttonManagement[1].onClick.AddListener(() => buttonClickedController(1));
         buttonManagement[2].onClick.AddListener(() => buttonClickedController(2));
@@ -44,12 +55,26 @@ public class CommandCardDisplay : MonoBehaviour
 
     void Update() {
         updateCCDisplay();
+        setAbilityCooldown();
+        if (cooldownChecking == false) {
+            cooldownActive = StartCoroutine(abilityCooldown());
+        }
     }
 
     void buttonClickedController(int buttonID) {
         //Debug.Log("Test "+buttonID);
         if (commandCards[StateNameController.characterSelected].commandCards[currentLayer].commandCardType[buttonID] != 0 || commandCards[StateNameController.characterSelected].commandCards[currentLayer].commandCardType[buttonID] != 3) {
-            //commandCards[StateNameController.characterSelected].commandCards[currentLayer].buttonFunctionality[buttonID].MainFunction();
+            if (commandCards[StateNameController.characterSelected].commandCards[currentLayer].commandCardType[buttonID] == 4) {
+                currentLayer = commandCards[StateNameController.characterSelected].commandCards[currentLayer].effectLayer[buttonID];
+            } else if (commandCards[StateNameController.characterSelected].commandCards[currentLayer].commandCardType[buttonID] == 1 && commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentCD[buttonID] == commandCards[StateNameController.characterSelected].commandCards[currentLayer].maxCD[buttonID]) {
+                if (StateNameController.blood >= commandCards[StateNameController.characterSelected].commandCards[currentLayer].ccCosts[buttonID] && commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentUpgrade[buttonID] < commandCards[StateNameController.characterSelected].commandCards[currentLayer].maxUpgrade[buttonID]) {
+                    StateNameController.blood = StateNameController.blood - commandCards[StateNameController.characterSelected].commandCards[currentLayer].ccCosts[buttonID];
+                    commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentCD[buttonID] = 0f;
+                    findScript(StateNameController.characterSelected,currentLayer,buttonID);
+                    commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentUpgrade[buttonID] += 1;
+                }
+
+            }
         }
     }
     public void updateCCDisplay() {
@@ -63,6 +88,8 @@ public class CommandCardDisplay : MonoBehaviour
                 abilityButtons[i].GetComponent<TooltipTrigger>().uDescription = commandCards[StateNameController.characterSelected].commandCards[currentLayer].ccDescription[i];
                 abilityButtons[i].GetComponent<TooltipTrigger>().uCost = commandCards[StateNameController.characterSelected].commandCards[currentLayer].ccCosts[i];
                 abilityButtons[i].GetComponent<TooltipTrigger>().empty = false;
+                abilityButtons[i].GetComponent<TooltipTrigger>().minUPG = commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentUpgrade[i];
+                abilityButtons[i].GetComponent<TooltipTrigger>().maxUPG = commandCards[StateNameController.characterSelected].commandCards[currentLayer].maxUpgrade[i];
                 //Debug.Log("kindaWorked??");
             } else {
                 resetVariables(i);
@@ -79,4 +106,39 @@ public class CommandCardDisplay : MonoBehaviour
         abilityButtons[indexID].GetComponent<TooltipTrigger>().empty = true;
 
     }
+
+    public void setAbilityCooldown() {
+        for (int i = 0; i<commandCards[StateNameController.characterSelected].commandCards[currentLayer].commandCardType.Length; i++) {
+            abilityIcons[i].fillAmount = (commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentCD[i]/commandCards[StateNameController.characterSelected].commandCards[currentLayer].maxCD[i]);
+            //Debug.Log(commandCards[StateNameController.characterSelected].commandCards[currentLayer].currentCD[i]+"/"+commandCards[StateNameController.characterSelected].commandCards[currentLayer].maxCD[i]);
+        }
+    }
+
+    IEnumerator abilityCooldown() {
+        cooldownChecking = true;
+        yield return new WaitForSeconds(1);
+        for (int q = 0; q<commandCards[StateNameController.characterSelected].commandCards.Length; q++) {
+            for (int i = 0; i<commandCards[StateNameController.characterSelected].commandCards[q].commandCardType.Length; i++) {
+                if ((commandCards[StateNameController.characterSelected].commandCards[q].maxCD[i] != 0 && commandCards[StateNameController.characterSelected].commandCards[q].maxCD[i] > commandCards[StateNameController.characterSelected].commandCards[q].currentCD[i])) {
+                    commandCards[StateNameController.characterSelected].commandCards[q].currentCD[i] += 1;
+                }
+            }
+        }
+        cooldownChecking = false;
+    }
+
+    public void findScript(int character,int layer,int buttonID) {
+        Debug.Log("Character: "+character+" Layer: "+layer+" ButtonID: "+buttonID);
+        if (character == 0) {
+            if (layer == 0) {
+                abilityFunctionalityHolder.GetComponent<L0PeasantAbiltiesScript>().activeAbilities[buttonID] = true;
+            }else if (layer == 1) {
+                abilityFunctionalityHolder.GetComponent<L1PeasantAbilitiesScript>().activeAbilities[buttonID] = true;
+            }
+        }else if (character == 1) {
+
+        }
+
+    }
+
 }

@@ -18,4 +18,17 @@ public class StateNameController : MonoBehaviour
     public static int DNA = 0;
     public static int[] researchUpgrades = new int[1000];
     //main player stats
+
+    public static GameObject playerCharacter;
+    public static int blood;
+    
+    //character stats
+    public static float damageBoost = 0f;
+    public static float attackSpeedBoost = 0f;
+    public static float healthBoost = 0f;
+    public static float healthRegenBoost = 0f;
+    public static float visionBoost = 0f;
+    public static float attackRangeBoost = 0f;
+    
+    //character stats
 }

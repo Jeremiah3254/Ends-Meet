@@ -2,14 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PeasantAbilities : MonoBehaviour
+public class L0PeasantAbiltiesScript : MonoBehaviour
 {
     public bool[] activeAbilities = new bool[15];
-    public float[] currentCD = new float[15];
-    public float[] maxCD = new float[15];
-    MonoBehaviour[] functions = new MonoBehaviour[15];
-    
-
     void Update()
     {
         for (int i = 0; i<activeAbilities.Length; i++) {

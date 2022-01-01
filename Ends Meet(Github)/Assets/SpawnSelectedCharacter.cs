@@ -28,6 +28,7 @@ public class SpawnSelectedCharacter : MonoBehaviour
         if (StateNameController.readyToSpawnCharacter == true) {
             StateNameController.readyToSpawnCharacter = false;
             currentPlayers[currentPlayerAmount] = Instantiate(characterTypes[StateNameController.characterSelected], transform.position, characterTypes[StateNameController.characterSelected].transform.rotation);
+            StateNameController.playerCharacter = currentPlayers[currentPlayerAmount];
             currentPlayerCameras[currentPlayerAmount] = Instantiate(cameraTypes[0], transform.position, cameraTypes[0].transform.rotation);
             currentPlayerCameras[currentPlayerAmount].GetComponent<PlayerCameraFunctionality>().cameraHeight = currentPlayers[currentPlayerAmount].GetComponent<PlayerMovement>().sight;
             currentPlayerCameras[currentPlayerAmount].GetComponent<PlayerCameraFunctionality>().player = currentPlayers[currentPlayerAmount];

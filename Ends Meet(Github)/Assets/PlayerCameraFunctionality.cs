@@ -23,6 +23,6 @@ public class PlayerCameraFunctionality : MonoBehaviour
     }
 
     public void followPlayer() {
-        transform.position = new Vector3(player.transform.position.x,cameraHeight,player.transform.position.z);
+        transform.position = new Vector3(player.transform.position.x,(cameraHeight+StateNameController.visionBoost),player.transform.position.z);
     }
 }

@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         float dist = Vector3.Distance(enemies[findPlayerTarget()].transform.position,transform.position);
-        if (dist <= attackRange && readyToAttack == true && speed == 0) {
+        if (dist <= (attackRange+StateNameController.attackRangeBoost) && readyToAttack == true && speed == 0) {
             attacking = StartCoroutine(attackCooldown(enemies[findPlayerTarget()]));
         }
 
@@ -58,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
             combatChecking = StartCoroutine(outOfCombatCheck()); 
         }
 
-        if (inCombat == false & healingOnCD == false & GetComponent<StatusManager>().health < GetComponent<StatusManager>().maxHealth) {
+        if (inCombat == false & healingOnCD == false & GetComponent<StatusManager>().health < (GetComponent<StatusManager>().maxHealth+StateNameController.healthBoost)) {
             passiveRegen = StartCoroutine(healingCooldown());
         }
 
@@ -108,7 +108,7 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator attackCooldown(GameObject target) {
         attackPlayer(target);
         readyToAttack = false;
-        yield return new WaitForSeconds(attackSpeed);
+        yield return new WaitForSeconds((attackSpeed/(1+(StateNameController.attackSpeedBoost/100))));
         readyToAttack = true;
     }
 
@@ -126,16 +126,16 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void passiveHealing() {
-        GetComponent<StatusManager>().health = GetComponent<StatusManager>().health + lifeRegen;
+        GetComponent<StatusManager>().health = GetComponent<StatusManager>().health + (lifeRegen+StateNameController.healthRegenBoost);
     }
 
     public void attackPlayer(GameObject target) {
-        if ((characterDamage - target.GetComponent<AttackClosestPlayer>().armor) <= 0f) {
+        if (((characterDamage+StateNameController.damageBoost) - target.GetComponent<AttackClosestPlayer>().armor) <= 0f) {
             transform.rotation = Quaternion.LookRotation((target.transform.position - transform.position),Vector3.up);
             target.GetComponent<StatusManager>().health = target.GetComponent<StatusManager>().health - 1;
         } else {
             transform.rotation = Quaternion.LookRotation((target.transform.position - transform.position),Vector3.up);
-            target.GetComponent<StatusManager>().health = target.GetComponent<StatusManager>().health - (characterDamage - target.GetComponent<AttackClosestPlayer>().armor);
+            target.GetComponent<StatusManager>().health = target.GetComponent<StatusManager>().health - (characterDamage+StateNameController.damageBoost - target.GetComponent<AttackClosestPlayer>().armor);
         }
     }
 
